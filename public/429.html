@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Rate Limited - Try Again Later</title>
+    <meta name="theme-color" content="#0f111a" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --primary: #ff0090;
+        --background: #0f111a;
+        --secondary: #00e0ff;
+        --card: #151827;
+        --text-primary: #eaf0ff;
+        --text-secondary: #8a94b9;
+        --error: #ff3d3d;
+      }
+
+      body {
+        background-color: var(--background);
+        color: var(--text-primary);
+        font-family: "Rajdhani", sans-serif;
+        margin: 0;
+        padding: 0;
+        height: 100svh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .error-container {
+        background: var(--card);
+        border-radius: 10px;
+        padding: 2rem;
+        max-width: 600px;
+        text-align: center;
+        border: 1px solid var(--error);
+        box-shadow: 0 0 30px rgba(255, 61, 61, 0.2);
+      }
+
+      h1 {
+        color: var(--error);
+        font-size: 3rem;
+        margin: 0;
+        text-transform: uppercase;
+        letter-spacing: 3px;
+        text-shadow: 0 0 10px rgba(255, 61, 61, 0.5);
+      }
+
+      .status-code {
+        font-size: 5rem;
+        color: var(--primary);
+        margin: 1rem 0;
+        text-shadow: 0 0 15px var(--primary);
+      }
+
+      .message {
+        color: var (--text-secondary);
+        font-size: 1.2rem;
+        margin: 1rem 0;
+        line-height: 1.5;
+      }
+
+      .retry-timer {
+        color: var(--secondary);
+        font-size: 1.5rem;
+        margin: 1rem 0;
+        text-shadow: 0 0 10px var(--secondary);
+      }
+
+      .footer-styles {
+        position: fixed;
+        bottom: 0;
+        width: 100%;
+        padding: 10px 0;
+        text-align: center;
+        font-size: 0.8rem;
+        color: var(--text-secondary);
+      }
+
+      @media (max-width: 600px) {
+        .error-container {
+          margin: 1rem;
+          padding: 1rem;
+        }
+
+        h1 {
+          font-size: 2rem;
+        }
+
+        .status-code {
+          font-size: 3rem;
+        }
+
+        .message {
+          font-size: 1rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="error-container">
+      <h1>Rate Limited</h1>
+      <div class="status-code">429</div>
+      <div class="message">
+        Whoa there! You've made too many requests.<br />
+        Please wait a moment before trying again.
+      </div>
+      <div class="retry-timer">Retry in: <span id="countdown">15</span>min</div>
+    </div>
+
+    <footer class="footer-styles">
+      <p>Made with ❤️ by S4E</p>
+    </footer>
+    <script>
+      class FaviconManager {
+        constructor() {
+          this.link = this.createFaviconLink();
+          this.canvas = this.createCanvas();
+          this.ctx = this.canvas.getContext("2d");
+          this.frame = 0;
+          this.ballX = 4;
+          this.ballY = 4;
+          this.ballDX = 1;
+          this.ballDY = 1;
+          this.paddle1Y = 2;
+          this.paddle2Y = 2;
+
+          this.animate();
+        }
+
+        createFaviconLink() {
+          let link = document.querySelector("link[rel*='icon']");
+          if (!link) {
+            link = document.createElement("link");
+            link.rel = "icon";
+            document.head.appendChild(link);
+          }
+          return link;
+        }
+
+        createCanvas() {
+          const canvas = document.createElement("canvas");
+          canvas.width = 16;
+          canvas.height = 16;
+          return canvas;
+        }
+
+        drawGame() {
+          // Clear with dark background
+          this.ctx.fillStyle = "#0F111A";
+          this.ctx.fillRect(0, 0, 16, 16);
+
+          // Draw paddles
+          this.ctx.fillStyle = "#FF0090";
+          this.ctx.fillRect(1, this.paddle1Y, 1, 4);
+          this.ctx.fillRect(14, this.paddle2Y, 1, 4);
+
+          // Draw ball
+          this.ctx.fillStyle = "#00E0FF";
+          this.ctx.fillRect(this.ballX, this.ballY, 2, 2);
+
+          // Update ball position
+          this.ballX += this.ballDX;
+          this.ballY += this.ballDY;
+
+          // Ball collision with top/bottom
+          if (this.ballY <= 0 || this.ballY >= 14) {
+            this.ballDY *= -1;
+          }
+
+          // Ball collision with paddles
+          if (
+            (this.ballX <= 2 &&
+              this.ballY >= this.paddle1Y &&
+              this.ballY <= this.paddle1Y + 4) ||
+            (this.ballX >= 13 &&
+              this.ballY >= this.paddle2Y &&
+              this.ballY <= this.paddle2Y + 4)
+          ) {
+            this.ballDX *= -1;
+          }
+
+          // Reset ball if it goes past paddles
+          if (this.ballX < 0 || this.ballX > 15) {
+            this.ballX = 8;
+            this.ballY = 8;
+          }
+
+          // Move paddles
+          this.paddle1Y = Math.max(0, Math.min(12, this.ballY - 2));
+          this.paddle2Y = Math.max(0, Math.min(12, this.ballY - 2));
+        }
+
+        animate() {
+          this.drawGame();
+          this.link.href = this.canvas.toDataURL();
+
+          // Run at 15 FPS
+          setTimeout(() => this.animate(), 1000 / 15);
+        }
+      }
+
+      new FaviconManager();
+    </script>
+  </body>
+</html>
