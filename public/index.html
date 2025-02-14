@@ -15,7 +15,10 @@
     <meta name="twitter:creator" content="@s4e" />
     <meta property="og:url" content="https://s4e.live" />
     <meta property="og:title" content="Live Scoreboard" />
-    <meta property="og:description" content="Live scoreboard for house events" />
+    <meta
+      property="og:description"
+      content="Live scoreboard for house events"
+    />
     <meta property="og:image" content="https://s4e.live/og-image.png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
@@ -101,10 +104,18 @@
         overflow: hidden;
       }
 
-      .house-red { border-color: #ff3d3d; }
-      .house-blue { border-color: #00e0ff; }
-      .house-green { border-color: #00ff94; }
-      .house-yellow { border-color: #ffc300; }
+      .house-red {
+        border-color: #ff3d3d;
+      }
+      .house-blue {
+        border-color: #00e0ff;
+      }
+      .house-green {
+        border-color: #00ff94;
+      }
+      .house-yellow {
+        border-color: #ffc300;
+      }
 
       .house-header {
         display: flex;
@@ -124,10 +135,22 @@
         font-weight: 700;
       }
 
-      .house-red .total-score { color: #ff3d3d; text-shadow: 0 0 15px rgba(255, 61, 61, 0.5); }
-      .house-blue .total-score { color: #00e0ff; text-shadow: 0 0 15px rgba(0, 224, 255, 0.5); }
-      .house-green .total-score { color: #00ff94; text-shadow: 0 0 15px rgba(0, 255, 148, 0.5); }
-      .house-yellow .total-score { color: #ffc300; text-shadow: 0 0 15px rgba(255, 195, 0, 0.5); }
+      .house-red .total-score {
+        color: #ff3d3d;
+        text-shadow: 0 0 15px rgba(255, 61, 61, 0.5);
+      }
+      .house-blue .total-score {
+        color: #00e0ff;
+        text-shadow: 0 0 15px rgba(0, 224, 255, 0.5);
+      }
+      .house-green .total-score {
+        color: #00ff94;
+        text-shadow: 0 0 15px rgba(0, 255, 148, 0.5);
+      }
+      .house-yellow .total-score {
+        color: #ffc300;
+        text-shadow: 0 0 15px rgba(255, 195, 0, 0.5);
+      }
 
       .expand-button {
         width: 100%;
@@ -360,7 +383,7 @@
           this.drawGame();
           this.link.href = this.canvas.toDataURL();
 
-          // Run at 15 FPS why ? cuz why not lol 
+          // Run at 15 FPS why ? cuz why not lol
           setTimeout(() => this.animate(), 1000 / 15);
         }
       }
@@ -374,39 +397,47 @@
         expandedEvents: new Set(), // Track expanded cards
 
         getHouseCard(house, totalScore, events) {
-          const card = document.createElement('div');
+          const card = document.createElement("div");
           card.className = `house-card house-${house}`;
           const isExpanded = this.expandedEvents.has(house);
-          
+
           card.innerHTML = `
             <div class="house-header">
               <div class="house-name">${house}</div>
               <div class="total-score">${totalScore}</div>
             </div>
-            <button class="expand-button">${isExpanded ? 'Hide Events' : 'View Events'}</button>
-            <div class="event-details ${isExpanded ? 'expanded' : ''}">
-              ${events.map(event => `
+            <button class="expand-button">${
+              isExpanded ? "Hide Events" : "View Events"
+            }</button>
+            <div class="event-details ${isExpanded ? "expanded" : ""}">
+              ${events
+                .map(
+                  (event) => `
                 <div class="event-item">
                   <span class="event-name">${event.name}</span>
                   <span class="event-score">${event.score}</span>
                 </div>
-              `).join('')}
+              `
+                )
+                .join("")}
             </div>
           `;
 
-          const expandButton = card.querySelector('.expand-button');
-          const eventDetails = card.querySelector('.event-details');
-          
+          const expandButton = card.querySelector(".expand-button");
+          const eventDetails = card.querySelector(".event-details");
+
           // Restore expanded state
           if (isExpanded) {
-            eventDetails.classList.add('expanded');
+            eventDetails.classList.add("expanded");
           }
 
-          expandButton.addEventListener('click', () => {
-            eventDetails.classList.toggle('expanded');
-            const isExpanded = eventDetails.classList.contains('expanded');
-            expandButton.textContent = isExpanded ? 'Hide Events' : 'View Events';
-            
+          expandButton.addEventListener("click", () => {
+            eventDetails.classList.toggle("expanded");
+            const isExpanded = eventDetails.classList.contains("expanded");
+            expandButton.textContent = isExpanded
+              ? "Hide Events"
+              : "View Events";
+
             // Track expanded state
             if (isExpanded) {
               this.expandedEvents.add(house);
@@ -416,36 +447,38 @@
           });
 
           return card;
-        }
+        },
       };
 
-      socket.on("scoreUpdate", ({scores, totalScores}) => {
+      socket.on("scoreUpdate", ({ scores, totalScores }) => {
         const scoreboard = document.getElementById("scoreboard");
         const loadingScreen = document.getElementById("loading-screen");
 
         if (state.isInitialLoad) {
           state.isInitialLoad = false;
           loadingScreen.classList.add("fade-out");
-          setTimeout(() => loadingScreen.style.display = "none", 500);
+          setTimeout(() => (loadingScreen.style.display = "none"), 500);
         }
 
-        scores.forEach(score => state.scores.set(score.event, score));
+        scores.forEach((score) => state.scores.set(score.event, score));
 
         // Use server-provided total scores
         const totals = {
           red: totalScores.totalScoreRed,
           blue: totalScores.totalScoreBlue,
           green: totalScores.totalScoreGreen,
-          yellow: totalScores.totalScoreYellow
+          yellow: totalScores.totalScoreYellow,
         };
 
-        scoreboard.innerHTML = '';
-        ['red', 'blue', 'green', 'yellow'].forEach(house => {
-          const events = Array.from(state.scores.entries()).map(([name, score]) => ({
-            name,
-            score: score[house]
-          }));
-          
+        scoreboard.innerHTML = "";
+        ["red", "blue", "green", "yellow"].forEach((house) => {
+          const events = Array.from(state.scores.entries()).map(
+            ([name, score]) => ({
+              name,
+              score: score[house],
+            })
+          );
+
           const card = state.getHouseCard(house, totals[house], events);
           scoreboard.appendChild(card);
         });
