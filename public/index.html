@@ -19,7 +19,6 @@
     <meta property="og:image" content="https://s4e.live/og-image.png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
-    
     <link
       href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&display=swap"
       rel="stylesheet"
@@ -68,7 +67,7 @@
         font-family: "Rajdhani", sans-serif;
         margin: 0;
         padding: 20px;
-        min-height: 100vh;
+        height: 100svh;
         overflow-y: overlay;
       }
 
@@ -84,108 +83,97 @@
 
       .scoreboard-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        grid-template-columns: repeat(2, 1fr);
         gap: 30px;
         max-width: 1200px;
         margin: 0 auto;
         padding: 20px;
       }
 
-      .score-card {
+      .house-card {
         background: var(--card);
-        border-radius: 10px;
-        padding: 15px;
-        box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
-        border: 1px solid var(--primary);
-        transition: transform 0.3s ease;
-        height: fit-content;
-        display: flex;
-        flex-direction: column;
-        gap: 15px;
-        opacity: 0;
-        transform: translateY(20px);
-        animation: cardEntrance 0.3s ease forwards;
+        border-radius: 15px;
+        padding: 25px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        border: 2px solid;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
       }
 
-      .score-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 0 30px rgba(255, 0, 144, 0.2);
+      .house-red { border-color: #ff3d3d; }
+      .house-blue { border-color: #00e0ff; }
+      .house-green { border-color: #00ff94; }
+      .house-yellow { border-color: #ffc300; }
+
+      .house-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+      }
+
+      .house-name {
+        font-size: 2.5rem;
+        font-weight: 700;
+        text-transform: uppercase;
+      }
+
+      .total-score {
+        font-size: 3.5rem;
+        font-weight: 700;
+      }
+
+      .house-red .total-score { color: #ff3d3d; text-shadow: 0 0 15px rgba(255, 61, 61, 0.5); }
+      .house-blue .total-score { color: #00e0ff; text-shadow: 0 0 15px rgba(0, 224, 255, 0.5); }
+      .house-green .total-score { color: #00ff94; text-shadow: 0 0 15px rgba(0, 255, 148, 0.5); }
+      .house-yellow .total-score { color: #ffc300; text-shadow: 0 0 15px rgba(255, 195, 0, 0.5); }
+
+      .expand-button {
+        width: 100%;
+        padding: 10px;
+        background: transparent;
+        border: 1px solid var(--text-secondary);
+        color: var(--text-primary);
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin-top: 15px;
+      }
+
+      .expand-button:hover {
+        background: var(--text-secondary);
+      }
+
+      .event-details {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease;
+      }
+
+      .event-details.expanded {
+        max-height: 500px;
+        margin-top: 15px;
+      }
+
+      .event-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 8px 0;
+        border-bottom: 1px solid var(--text-secondary);
       }
 
       .event-name {
-        font-size: 1.3rem;
-        padding: 8px;
-        margin: 0;
-        border-bottom: 2px solid var(--secondary);
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
-
-      .house-scores {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 12px;
-      }
-
-      .house-score {
-        padding: 10px 5px;
-        border-radius: 5px;
-        background: rgba(21, 24, 39, 0.6);
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-        min-height: 70px;
-      }
-
-      .house-label {
-        font-size: 0.8rem;
-        padding: 0 4px;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
-
-      .score-value {
-        font-size: 1.4rem;
-        padding: 2px;
-      }
-
-      .footer-styles {
-        width: 100%;
-        padding: 10px 0;
-        text-align: center;
-        font-size: 0.8rem;
         color: var(--text-secondary);
       }
 
-      .footer-styles p {
-        text-shadow: 0 0 10px var(--primary);
+      .event-score {
+        font-weight: 600;
       }
 
-      @media (max-width: 600px) {
+      @media (max-width: 768px) {
         .scoreboard-grid {
           grid-template-columns: 1fr;
-          padding: 10px;
-          gap: 20px;
-        }
-
-        .house-scores {
-          grid-template-columns: 1fr 1fr;
-          gap: 8px;
-        }
-
-        .house-score {
-          min-height: 60px;
-        }
-
-        .score-value {
-          font-size: 1.2rem;
-        }
-
-        h1 {
-          font-size: 2rem;
-          margin-bottom: 20px;
         }
       }
 
@@ -237,6 +225,12 @@
         box-shadow: 0 0 20px rgba(255, 0, 144, 0.3);
       }
 
+      .footer-styles {
+        text-align: center;
+        margin-top: 20px;
+        color: var(--text-secondary);
+      }
+
       @keyframes spin {
         to {
           transform: rotate(360deg);
@@ -278,9 +272,9 @@
     </div>
     <h1>Live Scoreboard</h1>
     <div id="scoreboard" class="scoreboard-grid"></div>
-    <footer class="footer-styles">
+    <!-- <footer class="footer-styles">
       <p>Made with ❤️ by S4E</p>
-    </footer>
+    </footer> -->
     <script src="/socket.io/socket.io.js"></script>
     <script>
       class FaviconManager {
@@ -377,129 +371,84 @@
       const state = {
         scores: new Map(),
         isInitialLoad: true,
+        expandedEvents: new Set(), // Track expanded cards
 
-        updateScore(newScore) {
-          const existingScore = this.scores.get(newScore.event);
-          const hasChanged =
-            !existingScore ||
-            existingScore.red !== newScore.red ||
-            existingScore.blue !== newScore.blue ||
-            existingScore.green !== newScore.green ||
-            existingScore.yellow !== newScore.yellow;
+        getHouseCard(house, totalScore, events) {
+          const card = document.createElement('div');
+          card.className = `house-card house-${house}`;
+          const isExpanded = this.expandedEvents.has(house);
+          
+          card.innerHTML = `
+            <div class="house-header">
+              <div class="house-name">${house}</div>
+              <div class="total-score">${totalScore}</div>
+            </div>
+            <button class="expand-button">${isExpanded ? 'Hide Events' : 'View Events'}</button>
+            <div class="event-details ${isExpanded ? 'expanded' : ''}">
+              ${events.map(event => `
+                <div class="event-item">
+                  <span class="event-name">${event.name}</span>
+                  <span class="event-score">${event.score}</span>
+                </div>
+              `).join('')}
+            </div>
+          `;
 
-          if (hasChanged) {
-            this.scores.set(newScore.event, newScore);
-            return true;
+          const expandButton = card.querySelector('.expand-button');
+          const eventDetails = card.querySelector('.event-details');
+          
+          // Restore expanded state
+          if (isExpanded) {
+            eventDetails.classList.add('expanded');
           }
-          return false;
-        },
 
-        getCardElement(score) {
-          const card = document.createElement("div");
-          card.className = "score-card";
-          card.id = `card-${score.event.replace(/\s+/g, "-")}`;
-          card.innerHTML = this.getCardContent(score);
-          return card;
-        },
-
-        getCardContent(score) {
-          return `
-                    <div class="event-name">${score.event}</div>
-                    <div class="house-scores">
-                        <div class="house-score house-red">
-                            <div class="house-label">Red House</div>
-                            <div class="score-value" data-house="red">${score.red}</div>
-                        </div>
-                        <div class="house-score house-blue">
-                            <div class="house-label">Blue House</div>
-                            <div class="score-value" data-house="blue">${score.blue}</div>
-                        </div>
-                        <div class="house-score house-green">
-                            <div class="house-label">Green House</div>
-                            <div class="score-value" data-house="green">${score.green}</div>
-                        </div>
-                        <div class="house-score house-yellow">
-                            <div class="house-label">Yellow House</div>
-                            <div class="score-value" data-house="yellow">${score.yellow}</div>
-                        </div>
-                    </div>
-                `;
-        },
-
-        updateCardValues(cardElement, score) {
-          ["red", "blue", "green", "yellow"].forEach((house) => {
-            const valueElement = cardElement.querySelector(
-              `[data-house="${house}"]`
-            );
-            if (valueElement && valueElement.textContent !== score[house]) {
-              valueElement.textContent = score[house];
-              valueElement.classList.add("value-update");
-              setTimeout(
-                () => valueElement.classList.remove("value-update"),
-                1000
-              );
+          expandButton.addEventListener('click', () => {
+            eventDetails.classList.toggle('expanded');
+            const isExpanded = eventDetails.classList.contains('expanded');
+            expandButton.textContent = isExpanded ? 'Hide Events' : 'View Events';
+            
+            // Track expanded state
+            if (isExpanded) {
+              this.expandedEvents.add(house);
+            } else {
+              this.expandedEvents.delete(house);
             }
           });
-        },
+
+          return card;
+        }
       };
 
-      const style = document.createElement("style");
-      style.textContent = `
-            @keyframes valueUpdate {
-                0% { transform: scale(1); }
-                50% { transform: scale(1.2); color: var(--accent); }
-                100% { transform: scale(1); }
-            }
-            .value-update {
-                animation: valueUpdate 0.5s ease;
-            }
-        `;
-      document.head.appendChild(style);
-
-      socket.on("scoreUpdate", (scores) => {
+      socket.on("scoreUpdate", ({scores, totalScores}) => {
         const scoreboard = document.getElementById("scoreboard");
         const loadingScreen = document.getElementById("loading-screen");
 
         if (state.isInitialLoad) {
           state.isInitialLoad = false;
           loadingScreen.classList.add("fade-out");
-          setTimeout(() => (loadingScreen.style.display = "none"), 500);
-
-          scores.forEach((score, index) => {
-            state.scores.set(score.event, score);
-            const card = state.getCardElement(score);
-            card.style.animationDelay = `${index * 0.1}s`;
-            scoreboard.appendChild(card);
-          });
-        } else {
-          scores.forEach((newScore) => {
-            if (state.updateScore(newScore)) {
-              const cardId = `card-${newScore.event.replace(/\s+/g, "-")}`;
-              const existingCard = document.getElementById(cardId);
-
-              if (existingCard) {
-                state.updateCardValues(existingCard, newScore);
-              } else {
-                const card = state.getCardElement(newScore);
-                scoreboard.appendChild(card);
-              }
-            }
-          });
-
-          const currentEvents = new Set(scores.map((s) => s.event));
-          state.scores.forEach((score, event) => {
-            if (!currentEvents.has(event)) {
-              const cardToRemove = document.getElementById(
-                `card-${event.replace(/\s+/g, "-")}`
-              );
-              if (cardToRemove) {
-                cardToRemove.style.opacity = "0";
-                setTimeout(() => cardToRemove.remove(), 300);
-                state.scores.delete(event);
-              }
-            }
-          });
+          setTimeout(() => loadingScreen.style.display = "none", 500);
         }
+
+        scores.forEach(score => state.scores.set(score.event, score));
+
+        // Use server-provided total scores
+        const totals = {
+          red: totalScores.totalScoreRed,
+          blue: totalScores.totalScoreBlue,
+          green: totalScores.totalScoreGreen,
+          yellow: totalScores.totalScoreYellow
+        };
+
+        scoreboard.innerHTML = '';
+        ['red', 'blue', 'green', 'yellow'].forEach(house => {
+          const events = Array.from(state.scores.entries()).map(([name, score]) => ({
+            name,
+            score: score[house]
+          }));
+          
+          const card = state.getHouseCard(house, totals[house], events);
+          scoreboard.appendChild(card);
+        });
       });
     </script>
   </body>

@@ -3,6 +3,7 @@ const { JWT } = require("google-auth-library");
 const http = require("http");
 const path = require("path");
 const fs = require("fs");
+const crypto = require("crypto");
 const creds = require("./creds_sheets.json");
 
 const SPREADSHEET_ID = "1WlEgug-ELhb-OnJmFha15gBAO6j-cKwc0AWd0wGujas";
@@ -61,28 +62,50 @@ const serviceAuth = new JWT({
 
 let previousScores = null;
 
+const hashAndCompare = (data1, data2) => {
+  const hash1 = crypto.createHash("sha256").update(data1).digest("hex");
+  const hash2 = crypto.createHash("sha256").update(data2).digest("hex");
+  return hash1 === hash2;
+};
+
 async function fetchScores() {
   const doc = new GoogleSpreadsheet(SPREADSHEET_ID, serviceAuth);
 
   await doc.loadInfo();
   const sheet = doc.sheetsByIndex[0];
   const rows = await sheet.getRows();
+  const totalScores = {
+    totalScoreRed: 0,
+    totalScoreBlue: 0,
+    totalScoreGreen: 0,
+    totalScoreYellow: 0,
+  };
   const scores = rows.map((row) => {
     const [event, red, blue, green, yellow] = row._rawData;
+    totalScores.totalScoreRed += parseInt(red);
+    totalScores.totalScoreBlue += parseInt(blue);
+    totalScores.totalScoreGreen += parseInt(green);
+    totalScores.totalScoreYellow += parseInt(yellow);
     return { event, red, blue, green, yellow };
   });
-  return scores;
+  return { scores, totalScores };
 }
 
 async function checkForUpdates() {
   try {
-    const currentScores = await fetchScores();
+    const { scores: currentScores, totalScores } = await fetchScores();
 
     const isSame = previousScores
-      ? JSON.stringify(currentScores) === JSON.stringify(previousScores)
+      ? hashAndCompare(
+          JSON.stringify(previousScores),
+          JSON.stringify(currentScores)
+        )
       : false;
     if (!isSame) {
-      io.emit("scoreUpdate", currentScores);
+      io.emit("scoreUpdate", {
+        scores: currentScores,
+        totalScores,
+      });
       previousScores = currentScores;
     }
   } catch (error) {
@@ -93,9 +116,13 @@ async function checkForUpdates() {
 setInterval(checkForUpdates, 5000);
 
 io.on("connection", (socket) => {
-  fetchScores().then((scores) => {
+  fetchScores().then(({ scores, totalScores }) => {
     previousScores = scores;
-    socket.emit("scoreUpdate", scores);
+    console.log(totalScores);
+    socket.emit("scoreUpdate", {
+      scores,
+      totalScores,
+    });
   });
 });
 
