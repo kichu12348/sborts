@@ -118,7 +118,6 @@ setInterval(checkForUpdates, 5000);
 io.on("connection", (socket) => {
   fetchScores().then(({ scores, totalScores }) => {
     previousScores = scores;
-    console.log(totalScores);
     socket.emit("scoreUpdate", {
       scores,
       totalScores,
