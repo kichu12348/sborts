@@ -15,7 +15,7 @@ const rateLimitedHtml = fs.readFileSync(
 
 const rateLimiter = {
   clients: new Map(),
-  limit: 40, //40 requests
+  limit: 100, //100 requests
   interval: 15 * 60 * 1000, // 15 minutes
   resetTime: Date.now() + 15 * 60 * 1000,
 
