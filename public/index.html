@@ -272,6 +272,12 @@
         }
       }
 
+      .score-card {
+        opacity: 0;
+        transform: translateY(20px);
+        animation: cardEntrance 0.5s forwards;
+      }
+
       /* Add animation delay for each card */
       .score-card:nth-child(1) {
         animation-delay: 0.1s;
@@ -297,7 +303,7 @@
     <div id="loading-screen" class="loading-screen">
       <div class="loader"></div>
     </div>
-    <h1>Live Scoreboard</h1>
+    <h1>Ashwa Live Scoreboard</h1>
     <div id="scoreboard" class="scoreboard-grid"></div>
     <!-- <footer class="footer-styles">
       <p>Made with ❤️ by S4E</p>
