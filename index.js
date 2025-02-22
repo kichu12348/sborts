@@ -87,7 +87,7 @@ const server = http.createServer((req, res) => {
     );
     return;
   }
-  if(req.url.startsWith("/styles")) {
+  if (req.url.startsWith("/styles")) {
     const fileName = req.url.split("/").pop();
     fs.readFile(
       path.join(__dirname, "public", "styles", fileName),
@@ -130,7 +130,10 @@ const serviceAuth = new JWT({
   scopes: ["https://www.googleapis.com/auth/spreadsheets"],
 });
 
+const doc = new GoogleSpreadsheet(SPREADSHEET_ID, serviceAuth);
+
 let previousScores = null;
+let previousTotalScores = null;
 
 const hashAndCompare = (data1, data2) => {
   const hash1 = crypto.createHash("sha256").update(data1).digest("hex");
@@ -138,39 +141,52 @@ const hashAndCompare = (data1, data2) => {
   return hash1 === hash2;
 };
 
-async function fetchScores() {
-  const doc = new GoogleSpreadsheet(SPREADSHEET_ID, serviceAuth);
+async function fetchScoresWithBackoff(retries = 5, delay = 1000) {
+  for (let i = 0; i < retries; i++) {
+    try {
+      await doc.loadInfo();
+      const sheet = doc.sheetsByIndex[0];
+      const rows = await sheet.getRows();
 
-  await doc.loadInfo();
-  const sheet = doc.sheetsByIndex[0];
-  const rows = await sheet.getRows();
-  const totalScores = {
-    totalScoreRed: 0,
-    totalScoreBlue: 0,
-    totalScoreGreen: 0,
-    totalScoreYellow: 0,
-  };
-  const scores = rows.map((row) => {
-    const [event, red, blue, green, yellow] = row._rawData;
-    totalScores.totalScoreRed += parseInt(red) || 0;
-    totalScores.totalScoreBlue += parseInt(blue) || 0;
-    totalScores.totalScoreGreen += parseInt(green) || 0;
-    totalScores.totalScoreYellow += parseInt(yellow) || 0;
-    return {
-      event: event || "No event",
-      red: red || 0,
-      blue: blue || 0,
-      green: green || 0,
-      yellow: yellow || 0,
-    };
-  });
-  return { scores, totalScores };
+      const totalScores = {
+        totalScoreRed: 0,
+        totalScoreBlue: 0,
+        totalScoreGreen: 0,
+        totalScoreYellow: 0,
+      };
+
+      const scores = rows.map((row) => {
+        const [event, red, blue, green, yellow] = row._rawData;
+        totalScores.totalScoreRed += parseInt(red) || 0;
+        totalScores.totalScoreBlue += parseInt(blue) || 0;
+        totalScores.totalScoreGreen += parseInt(green) || 0;
+        totalScores.totalScoreYellow += parseInt(yellow) || 0;
+        return {
+          event: event || "No event",
+          red: red || 0,
+          blue: blue || 0,
+          green: green || 0,
+          yellow: yellow || 0,
+        };
+      });
+      return { scores, totalScores };
+    } catch (error) {
+      const jitter = Math.random() * delay;
+      const waitTime = delay + jitter;
+      console.log(
+        `Fetch attempt ${i + 1} failed. Retrying in ${waitTime.toFixed(0)}ms... Error: ${error.message}`
+      );
+      await new Promise((resolve) => setTimeout(resolve, waitTime));
+      delay *= 2;
+    }
+  }
+  throw new Error("Max retries reached for fetching scores");
 }
 
 async function checkForUpdates() {
   try {
-    const { scores: currentScores, totalScores } = await fetchScores();
-
+    const { scores: currentScores, totalScores } =
+      await fetchScoresWithBackoff();
     const isSame = previousScores
       ? hashAndCompare(
           JSON.stringify(previousScores),
@@ -178,11 +194,9 @@ async function checkForUpdates() {
         )
       : false;
     if (!isSame) {
-      io.emit("scoreUpdate", {
-        scores: currentScores,
-        totalScores,
-      });
+      io.emit("scoreUpdate", { scores: currentScores, totalScores });
       previousScores = currentScores;
+      previousTotalScores = totalScores;
     }
   } catch (error) {
     console.log("Error fetching scores:", error.message);
@@ -192,16 +206,17 @@ async function checkForUpdates() {
 setInterval(checkForUpdates, 5000);
 
 io.on("connection", (socket) => {
-  fetchScores().then(({ scores, totalScores }) => {
+  if(previousScores && previousTotalScores) {
+    socket.emit("scoreUpdate", { scores: previousScores, totalScores: previousTotalScores });
+    return;
+  }
+  fetchScoresWithBackoff().then(({ scores, totalScores }) => {
     previousScores = scores;
-    socket.emit("scoreUpdate", {
-      scores,
-      totalScores,
-    });
+    socket.emit("scoreUpdate", { scores, totalScores });
   });
 });
 
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+  console.log(`Server running on port ${PORT} 😎 🚀`);
 });
