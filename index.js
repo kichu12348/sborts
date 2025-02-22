@@ -212,6 +212,7 @@ io.on("connection", (socket) => {
   }
   fetchScoresWithBackoff().then(({ scores, totalScores }) => {
     previousScores = scores;
+    previousTotalScores = totalScores;
     socket.emit("scoreUpdate", { scores, totalScores });
   });
 });
