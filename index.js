@@ -17,7 +17,7 @@ const rateLimiter = {
   clients: new Map(),
   limit: 500, //500 requests
   interval: 3 * 60 * 1000, // 3 minutes
-  resetTime: Date.now() + 15 * 60 * 1000,
+  resetTime: Date.now() + 3 * 60 * 1000, // 3 minutes from now
 
   isAllowed(ip) {
     const now = Date.now();
