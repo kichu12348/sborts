@@ -1,0 +1,400 @@
+@font-face {
+  font-family: "light-sport";
+  src: url("/fonts/light_sport.otf") format("opentype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Tallica";
+  src: url("/fonts/Tallica-Medium.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Tallica";
+  src: url("/fonts/Tallica-MediumOblique.ttf") format("truetype");
+  font-weight: normal;
+  font-style: oblique;
+}
+
+:root {
+  --primary: #ff0090;
+  --background: #0f111a;
+  --secondary: #00e0ff;
+  --card: #151827;
+  --text-primary: #eaf0ff;
+  --text-secondary: #8a94b9;
+  --success: #00ff94;
+  --error: #ff3d3d;
+  --accent: #ffc300;
+}
+
+.header-container {
+  text-align: center;
+  margin-bottom: 40px;
+  position: relative;
+}
+
+.event-title {
+  font-size: 6rem;
+  background: linear-gradient(90deg, var(--primary), var(--secondary));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  text-transform: uppercase;
+  margin: 0;
+  letter-spacing: 6px;
+  font-family: "Tallica", Arial;
+
+  @media screen and (max-width: 768px) {
+    font-size: 4rem;
+  }
+}
+
+.event-subtitle {
+  font-size: 2.2rem;
+  color: var(--text-secondary);
+  margin: 15px 0 35px 0;
+  font-family: "light-sport", Arial;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  opacity: 0;
+  animation: subtitleFade 0.8s ease forwards 0.5s;
+}
+
+.header-decoration {
+  position: absolute;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--primary) 20%,
+    var(--secondary) 50%,
+    var(--accent) 80%,
+    transparent 100%
+  );
+  bottom: -15px;
+}
+
+::-webkit-scrollbar {
+  width: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--card);
+  border-radius: 6px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--primary);
+  border-radius: 6px;
+  border: 3px solid var(--card);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--secondary);
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--primary) var(--card);
+}
+
+body {
+  background-color: var(--background);
+  color: var(--text-primary);
+  font-family: "Tallica", Arial;
+  margin: 0;
+  padding: 20px;
+  overflow-y: overlay;
+  position: relative;
+}
+
+h1 {
+  color: var(--primary);
+  text-align: center;
+  font-size: 3rem;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  margin-top: 10px;
+  margin-bottom: 30px;
+}
+
+.scoreboard-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 30px;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  position: relative;
+  z-index: 1;
+}
+
+.house-card {
+  background: var(--card);
+  border-radius: 15px;
+  padding: 25px;
+  border: 2px solid;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.house-red {
+  border-color: #ff3d3d;
+}
+.house-blue {
+  border-color: #00e0ff;
+}
+.house-green {
+  border-color: #00ff94;
+}
+.house-yellow {
+  border-color: #ffc300;
+}
+
+.house-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.house-name {
+  font-size: 2.5rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.total-score {
+  font-size: 3.5rem;
+  font-weight: 700;
+}
+
+.house-red .total-score {
+  color: #ff3d3d;
+}
+.house-blue .total-score {
+  color: #00e0ff;
+}
+.house-green .total-score {
+  color: #00ff94;
+}
+.house-yellow .total-score {
+  color: #ffc300;
+}
+
+.expand-button {
+  width: 100%;
+  padding: 10px;
+  background: transparent;
+  border: 1px solid var(--text-secondary);
+  color: var(--text-primary);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 15px;
+}
+
+.expand-button:hover {
+  background: var(--text-secondary);
+}
+
+.event-details {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+}
+
+.event-details.expanded {
+  max-height: 350px;
+  margin-top: 15px;
+  overflow-y: scroll;
+  padding: 10px;
+
+  /* Scrollbar Styles */
+  scrollbar-width: thin;
+  scroll-behavior: smooth;
+  scrollbar-color: var(--primary) var(--card);
+
+  @media screen and (max-width: 768px) {
+    max-height: 250px;
+  }
+}
+
+.event-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--text-secondary);
+}
+
+.event-name {
+  color: var(--text-secondary);
+}
+
+.event-score {
+  font-weight: 600;
+}
+
+@media (max-width: 768px) {
+  .scoreboard-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.house-red .score-value {
+  color: #ff3d3d;
+}
+.house-blue .score-value {
+  color: #00e0ff;
+}
+.house-green .score-value {
+  color: #00ff94;
+}
+.house-yellow .score-value {
+  color: #ffc300;
+}
+
+/* Loading Animation Styles */
+.loading-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--background);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  transition: opacity 0.5s;
+}
+
+.loading-screen.fade-out {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.loader {
+  width: 100px;
+  height: 100px;
+  border: 3px solid var(--card);
+  border-radius: 50%;
+  border-top-color: var(--primary);
+  border-bottom-color: var(--secondary);
+  animation: spin 1s ease-in-out infinite;
+}
+
+.footer-styles {
+  text-align: center;
+  margin-top: 20px;
+  color: var(--text-secondary);
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Card Animation Styles */
+@keyframes cardEntrance {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.score-card {
+  opacity: 0;
+  transform: translateY(20px);
+  animation: cardEntrance 0.5s forwards;
+}
+
+/* Add animation delay for each card */
+.score-card:nth-child(1) {
+  animation-delay: 0.1s;
+}
+.score-card:nth-child(2) {
+  animation-delay: 0.2s;
+}
+.score-card:nth-child(3) {
+  animation-delay: 0.3s;
+}
+.score-card:nth-child(4) {
+  animation-delay: 0.4s;
+}
+.score-card:nth-child(5) {
+  animation-delay: 0.5s;
+}
+.score-card:nth-child(6) {
+  animation-delay: 0.6s;
+}
+
+.logo-container {
+  text-align: center;
+  margin-bottom: 50px;
+  opacity: 0;
+  transform: translateY(-20px);
+  animation: logoEntrance 0.8s ease forwards;
+  position: relative;
+  z-index: 1;
+}
+
+.logo {
+  width: 280px;
+  height: auto;
+  transition: transform 0.3s ease;
+
+  @media screen and (max-width: 768px) {
+    width: 200px;
+  }
+}
+
+@keyframes logoEntrance {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes subtitleFade {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.background-logo {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(1.5);
+  width: 100vw;
+  height: 100vh;
+  opacity: 0.15;
+  mix-blend-mode: overlay;
+  pointer-events: none;
+  z-index: 0;
+  filter: brightness(0.7) contrast(0.8);
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+  animation: subtleFloat 20s ease-in-out infinite;
+}
+
+@keyframes subtleFloat {
+  0%, 100% { transform: translate(-50%, -50%) scale(1.5); }
+  50% { transform: translate(-50%, -50%) scale(1.6); }
+}

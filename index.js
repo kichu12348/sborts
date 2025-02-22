@@ -15,8 +15,8 @@ const rateLimitedHtml = fs.readFileSync(
 
 const rateLimiter = {
   clients: new Map(),
-  limit: 100, //100 requests
-  interval: 15 * 60 * 1000, // 15 minutes
+  limit: 500, //500 requests
+  interval: 3 * 60 * 1000, // 3 minutes
   resetTime: Date.now() + 15 * 60 * 1000,
 
   isAllowed(ip) {
@@ -35,6 +35,76 @@ const rateLimiter = {
 };
 
 const server = http.createServer((req, res) => {
+  if (req.url.startsWith("/fonts")) {
+    const fileName = req.url.split("/").pop();
+    fs.readFile(
+      path.join(__dirname, "public", "fonts", fileName),
+      (err, data) => {
+        if (err) {
+          res.writeHead(500);
+          return res.end("Error loading font" + err.message);
+        }
+        res.writeHead(200);
+        res.end(data);
+      }
+    );
+    return;
+  }
+  if (req.url.startsWith("/images")) {
+    const fileName = req.url.split("/").pop();
+    fs.readFile(
+      path.join(__dirname, "public", "images", fileName),
+      (err, data) => {
+        if (err) {
+          res.writeHead(500);
+          return res.end("Error loading css" + err.message);
+        }
+        const headers = {
+          "Content-Type": "image/svg+xml",
+        };
+        res.writeHead(200, headers);
+        res.end(data);
+      }
+    );
+    return;
+  }
+
+  if (req.url.startsWith("/scripts")) {
+    const fileName = req.url.split("/").pop();
+    fs.readFile(
+      path.join(__dirname, "public", "scripts", fileName),
+      (err, data) => {
+        if (err) {
+          res.writeHead(500);
+          return res.end("Error loading script" + err.message);
+        }
+        const headers = {
+          "Content-Type": "text/javascript",
+        };
+        res.writeHead(200, headers);
+        res.end(data);
+      }
+    );
+    return;
+  }
+  if(req.url.startsWith("/styles")) {
+    const fileName = req.url.split("/").pop();
+    fs.readFile(
+      path.join(__dirname, "public", "styles", fileName),
+      (err, data) => {
+        if (err) {
+          res.writeHead(500);
+          return res.end("Error loading css" + err.message);
+        }
+        const headers = {
+          "Content-Type": "text/css",
+        };
+        res.writeHead(200, headers);
+        res.end(data);
+      }
+    );
+    return;
+  }
   const clientIP = req.socket.remoteAddress;
 
   if (!rateLimiter.isAllowed(clientIP)) {
@@ -82,11 +152,17 @@ async function fetchScores() {
   };
   const scores = rows.map((row) => {
     const [event, red, blue, green, yellow] = row._rawData;
-    totalScores.totalScoreRed += parseInt(red);
-    totalScores.totalScoreBlue += parseInt(blue);
-    totalScores.totalScoreGreen += parseInt(green);
-    totalScores.totalScoreYellow += parseInt(yellow);
-    return { event, red, blue, green, yellow };
+    totalScores.totalScoreRed += parseInt(red) || 0;
+    totalScores.totalScoreBlue += parseInt(blue) || 0;
+    totalScores.totalScoreGreen += parseInt(green) || 0;
+    totalScores.totalScoreYellow += parseInt(yellow) || 0;
+    return {
+      event: event || "No event",
+      red: red || 0,
+      blue: blue || 0,
+      green: green || 0,
+      yellow: yellow || 0,
+    };
   });
   return { scores, totalScores };
 }
