@@ -79,7 +79,13 @@ socket.on("scoreUpdate", ({ scores, totalScores }) => {
   };
 
   scoreboard.innerHTML = "";
-  ["red", "blue", "green", "yellow"].forEach((house) => {
+  
+  // Sort houses by total score in descending order
+  const sortedHouses = ["red", "blue", "green", "yellow"].sort((a, b) => 
+    totals[b] - totals[a]
+  );
+
+  sortedHouses.forEach((house) => {
     const events = Array.from(state.scores.entries()).map(
       ([name, score]) => ({
         name,
