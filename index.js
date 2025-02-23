@@ -135,11 +135,9 @@ const doc = new GoogleSpreadsheet(SPREADSHEET_ID, serviceAuth);
 let previousScores = null;
 let previousTotalScores = null;
 
-const hashAndCompare = (data1, data2) => {
-  const hash1 = crypto.createHash("sha256").update(data1).digest("hex");
-  const hash2 = crypto.createHash("sha256").update(data2).digest("hex");
-  return hash1 === hash2;
-};
+const hashAndCompare = (data1, data2) => data1 === data2;
+  //hashing is slower back to back than comparing strings
+  
 
 async function fetchScoresWithBackoff(retries = 5, delay = 1000) {
   for (let i = 0; i < retries; i++) {
