@@ -172,7 +172,10 @@ async function fetchScoresWithBackoff(retries = 5, delay = 1000) {
       const jitter = Math.random() * delay;
       const waitTime = delay + jitter;
       console.log(
-        `Fetch attempt ${i + 1} failed. Retrying in ${waitTime.toFixed(0)}ms... Error: ${error.message}`
+        `Fetch attempt ${i + 1} failed. Retrying in ${waitTime.toFixed(0)}ms... 
+        Error: ${error.message}
+        time: ${new Date().toLocaleTimeString()}
+        `
       );
       await new Promise((resolve) => setTimeout(resolve, waitTime));
       delay *= 2;
