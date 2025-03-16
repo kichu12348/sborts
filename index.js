@@ -35,6 +35,12 @@ const rateLimiter = {
 };
 
 const server = http.createServer((req, res) => {
+  // Set CORS headers
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, PATCH, DELETE");
+  res.setHeader("Access-Control-Allow-Headers", "X-Requested-With,content-type");
+  res.setHeader("Access-Control-Allow-Credentials", true);
+  //// Set CORS headers
   if (req.url.startsWith("/fonts")) {
     const fileName = req.url.split("/").pop();
     fs.readFile(
