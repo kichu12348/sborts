@@ -153,26 +153,34 @@ async function fetchScoresWithBackoff(retries = 5, delay = 1000) {
       const rows = await sheet.getRows();
 
       const totalScores = {
-        totalScoreRed: 0,
-        totalScoreBlue: 0,
-        totalScoreGreen: 0,
-        totalScoreYellow: 0,
+        totalAtredies: 0,
+        totalArrakis: 0,
+        totalWinterfell: 0,
+        totalZephandor: 0,
       };
 
       const scores = rows.map((row) => {
-        const [event, red, blue, green, yellow] = row._rawData;
-        totalScores.totalScoreRed += parseInt(red) || 0;
-        totalScores.totalScoreBlue += parseInt(blue) || 0;
-        totalScores.totalScoreGreen += parseInt(green) || 0;
-        totalScores.totalScoreYellow += parseInt(yellow) || 0;
+        const [event,Atreides, Arrakis, Winterfell, Zephandor] = row._rawData;
+        const Athreides_Score = parseInt(Atreides)||0;
+        const Arrakis_Score = parseInt(Arrakis)||0;
+        const Winterfell_Score = parseInt(Winterfell)||0;
+        const Zephandor_Score = parseInt(Zephandor)||0;
+        totalScores.totalAtredies += Athreides_Score;
+        totalScores.totalArrakis += Arrakis_Score;
+        totalScores.totalWinterfell += Winterfell_Score;
+        totalScores.totalZephandor += Zephandor_Score;
+
         return {
-          event: event || "No event",
-          red: red || 0,
-          blue: blue || 0,
-          green: green || 0,
-          yellow: yellow || 0,
+          event,
+          scores: {
+            Atreides: Athreides_Score,
+            Arrakis: Arrakis_Score,
+            Winterfell: Winterfell_Score,
+            Zephandor: Zephandor_Score,
+          },
         };
       });
+
       return { scores, totalScores };
     } catch (error) {
       const jitter = Math.random() * delay;
