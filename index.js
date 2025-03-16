@@ -128,7 +128,14 @@ const server = http.createServer((req, res) => {
   });
 });
 
-const io = require("socket.io")(server);
+const io = require("socket.io")(server, {
+  cors: {
+    origin: ["http://localhost:5173", "http://localhost", "*"], // Allow common development origins
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["X-Requested-With", "Content-Type"],
+    credentials: true
+  }
+});
 
 const serviceAuth = new JWT({
   email: creds.client_email,
