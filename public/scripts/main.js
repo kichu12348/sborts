@@ -58,7 +58,7 @@ const state = {
   },
 };
 
-socket.on("scoreUpdate", ({ scores, totalScores }) => {
+socket.on("scoreUpdateAshwa", ({ scores, totalScores }) => {
   const scoreboard = document.getElementById("scoreboard");
   const loadingScreen = document.getElementById("loading-screen");
 
